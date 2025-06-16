@@ -10,13 +10,14 @@ import { createAccountRoutes } from "./routes/accountRoutes";
 const app = express();
 app.use(express.json());
 
+// Initialize the in-memory account repository and use cases
 const accountRepository = InMemoryAccountRepository.getInstance();
-
 const getAccountBalanceUseCase = new GetAccountBalanceUseCase(accountRepository);
 const depositUseCase = new DepositUseCase(accountRepository);
 const withdrawUseCase = new WithdrawUseCase(accountRepository);
 const transferUseCase = new TransferUseCase(accountRepository);
 
+// Initialize the account controller with the use cases
 const accountController = new AccountController(
   depositUseCase,
   getAccountBalanceUseCase,
