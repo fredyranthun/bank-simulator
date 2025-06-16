@@ -3,6 +3,13 @@ import app from "../src/app";
 import request from "supertest";
 
 describe("Account Integration Tests", () => {
+  it("should reset accounts and return 200", async () => {
+    const response = await request(app).post("/reset");
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe("OK");
+  });
+
   it("should return 404 for a non-existing account balance", async () => {
     const response = await request(app).get("/balance").query({ account_id: "1234" });
 
@@ -43,7 +50,7 @@ describe("Account Integration Tests", () => {
   it("should withdraw from an existing account", async () => {
     const response = await request(app).post("/event").send({ type: "withdraw", origin: "100", amount: 5 });
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(response.body).toEqual({
       origin: {
         id: "100",

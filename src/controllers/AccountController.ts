@@ -6,13 +6,15 @@ import { WithdrawUseCase } from "../applications/use-cases/WithdrawUseCase";
 import { TransferUseCase } from "../applications/use-cases/TransferUseCase";
 
 import { AccountValidator } from "../validators.ts/AccountValidator";
+import { ResetAccountsUseCase } from "../applications/use-cases/ResetAccountsUseCase";
 
 export class AccountController {
   constructor(
     private depositUseCase: DepositUseCase,
     private getAccountBalanceUseCase: GetAccountBalanceUseCase,
     private withdrawUseCase: WithdrawUseCase,
-    private transferUseCase: TransferUseCase
+    private transferUseCase: TransferUseCase,
+    private resetAccountsUseCase: ResetAccountsUseCase
   ) {}
 
   public async processEvent(req: Request, res: Response) {
@@ -61,7 +63,7 @@ export class AccountController {
         res.status(404).send("0");
         return;
       }
-      res.status(200).json(response);
+      res.status(201).json(response);
     } catch (error) {
       console.error("Error during withdrawal:", error);
       res.status(500);
@@ -108,6 +110,18 @@ export class AccountController {
     } catch (error) {
       console.error("Error fetching account balance:", error);
       res.status(500).send();
+    }
+  }
+
+  async reset(req: Request, res: Response) {
+    try {
+      // Reset logic can be implemented here, e.g., clearing the in-memory repository
+      await this.resetAccountsUseCase.execute();
+      console.log("Accounts reset successfully");
+      res.status(200).send("OK");
+    } catch (error) {
+      console.error("Error during reset:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
   }
 }
