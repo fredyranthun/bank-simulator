@@ -1,5 +1,6 @@
 import { IAccountRepository } from "../../domain/repositories/IAccountRepository";
 import { Account } from "../../domain/entities/Account";
+import { NotFoundError } from "../../error-handling/errors";
 
 export interface TransferRequest {
   origin: string;
@@ -21,7 +22,7 @@ export interface TransferResponse {
 export class TransferUseCase {
   constructor(private accountRepository: IAccountRepository) {}
 
-  async execute(request: TransferRequest): Promise<TransferResponse | null> {
+  async execute(request: TransferRequest): Promise<TransferResponse> {
     const { origin, destination, amount } = request;
 
     if (amount <= 0) {
@@ -30,7 +31,7 @@ export class TransferUseCase {
 
     const originAccount = await this.accountRepository.findById(origin);
     if (!originAccount) {
-      return null; // Return null if the origin account does not exist
+      throw new NotFoundError(`Origin account with ID ${origin} not found`);
     }
 
     let destinationAccount = await this.accountRepository.findById(destination);

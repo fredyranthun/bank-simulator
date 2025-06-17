@@ -1,4 +1,5 @@
 import { IAccountRepository } from "../../domain/repositories/IAccountRepository";
+import { NotFoundError } from "../../error-handling/errors";
 
 export interface GetAccountBalanceResponse {
   balance: number;
@@ -7,10 +8,10 @@ export interface GetAccountBalanceResponse {
 export class GetAccountBalanceUseCase {
   constructor(private accountRepository: IAccountRepository) {}
 
-  async execute(accountId: string): Promise<GetAccountBalanceResponse | null> {
+  async execute(accountId: string): Promise<GetAccountBalanceResponse> {
     const account = await this.accountRepository.findById(accountId);
     if (!account) {
-      return null;
+      throw new NotFoundError(`Account with ID ${accountId} not found`);
     }
     return {
       balance: account.balance,

@@ -1,4 +1,5 @@
 import { IAccountRepository } from "../../domain/repositories/IAccountRepository";
+import { BadRequestError, NotFoundError } from "../../error-handling/errors";
 
 export interface WithdrawUseCaseRequest {
   origin: string;
@@ -17,12 +18,12 @@ export class WithdrawUseCase {
 
   async execute(request: WithdrawUseCaseRequest): Promise<WithdrawUseCaseResponse | null> {
     if (request.amount <= 0) {
-      throw new Error("Withdrawal amount must be greater than zero");
+      throw new BadRequestError("Withdrawal amount must be greater than zero");
     }
 
     const account = await this.accountRepository.findById(request.origin);
     if (!account) {
-      return null; // Account not found
+      throw new NotFoundError(`Account with ID ${request.origin} not found`);
     }
 
     account.withdraw(request.amount);

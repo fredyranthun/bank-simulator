@@ -7,6 +7,7 @@ import { TransferUseCase } from "../applications/use-cases/TransferUseCase";
 
 import { AccountValidator } from "../validators.ts/AccountValidator";
 import { ResetAccountsUseCase } from "../applications/use-cases/ResetAccountsUseCase";
+import { NotFoundError } from "../error-handling/errors";
 
 export class AccountController {
   constructor(
@@ -59,12 +60,12 @@ export class AccountController {
 
     try {
       const response = await this.withdrawUseCase.execute({ amount, origin });
-      if (!response) {
+      res.status(201).json(response);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
         res.status(404).send("0");
         return;
       }
-      res.status(201).json(response);
-    } catch (error) {
       console.error("Error during withdrawal:", error);
       res.status(500);
     }
@@ -79,14 +80,14 @@ export class AccountController {
         origin,
         destination,
       });
-      if (!response) {
-        res.status(404).send("0");
-        return;
-      }
       res.status(201).json(response);
       return;
     } catch (error) {
       console.error("Error during transfer:", error);
+      if (error instanceof NotFoundError) {
+        res.status(404).send("0");
+        return;
+      }
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
@@ -102,13 +103,13 @@ export class AccountController {
 
     try {
       const response = await this.getAccountBalanceUseCase.execute(accountId as string);
-      if (!response) {
-        res.status(404).send("0");
-        return;
-      }
       res.status(200).send(response.balance);
     } catch (error) {
       console.error("Error fetching account balance:", error);
+      if (error instanceof NotFoundError) {
+        res.status(404).send("0");
+        return;
+      }
       res.status(500).send();
     }
   }
