@@ -20,3 +20,9 @@ npm install
 npm run build
 npm start
 ```
+
+or run in the development mode:
+
+```bash
+npm run dev
+```
