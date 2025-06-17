@@ -36,3 +36,15 @@ or run in the development mode:
 ```bash
 npm run dev
 ```
+
+### 4. Running the project with Docker
+
+To run the Docker container of the project, run the following commands:
+
+```bash
+# Build the Docker image
+docker build -t bank-simulator .
+
+# Run the container with port 4000 mapped to your host machine
+docker run -p 4000:4000 bank-simulator
+```
